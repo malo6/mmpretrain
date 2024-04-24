@@ -6,36 +6,28 @@ _base_ = [
 max_epochs=400
 # model settings
 model = dict(
-    type='MoCo',
-    queue_len=1280,
-    feat_dim=128,
-    momentum=0.001,
+    type='SimCLR',
     backbone=dict(
-        init_cfg=dict(
-                type='Pretrained',
-                checkpoint='../preTrain/resnet50-19c8e357.pth',
-                ),
         type='ResNet',
         depth=50,
-        norm_cfg=dict(type='BN'),
-        zero_init_residual=False),
+        norm_cfg=dict(type='SyncBN'),
+        zero_init_residual=True),
     neck=dict(
-        type='MoCoV2Neck',
+        type='NonLinearNeck',  # SimCLR non-linear neck
         in_channels=2048,
         hid_channels=2048,
         out_channels=128,
+        num_layers=2,
         with_avg_pool=True),
     head=dict(
         type='ContrastiveHead',
         loss=dict(type='CrossEntropyLoss'),
-        temperature=0.2))
+        temperature=0.1),
+)
 
 # only keeps the latest 3 checkpoints
-default_hooks = dict(checkpoint=dict(max_keep_ckpts=3))
+default_hooks = dict(checkpoint=dict(max_keep_ckpts=4))
 
-# NOTE: `auto_scale_lr` is for automatically scaling LR
-# based on the actual training batch size.
-# auto_scale_lr = dict(base_batch_size=256)
 
 
 # optimizer wrapper
