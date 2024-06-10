@@ -6,7 +6,8 @@ _base_ = [
 max_epochs=400
 # model settings
 model = dict(
-    type='SimCLR',
+    type='BYOL',
+    base_momentum=0.01,
     backbone=dict(
         init_cfg=dict(
                 type='Pretrained',
@@ -15,18 +16,28 @@ model = dict(
         type='ResNet',
         depth=50,
         norm_cfg=dict(type='SyncBN'),
-        zero_init_residual=True),
+        zero_init_residual=False),
     neck=dict(
-        type='NonLinearNeck',  # SimCLR non-linear neck
+        type='NonLinearNeck',
         in_channels=2048,
-        hid_channels=2048,
-        out_channels=128,
+        hid_channels=4096,
+        out_channels=256,
         num_layers=2,
+        with_bias=True,
+        with_last_bn=False,
         with_avg_pool=True),
     head=dict(
-        type='ContrastiveHead',
-        loss=dict(type='CrossEntropyLoss'),
-        temperature=0.1),
+        type='LatentPredictHead',
+        predictor=dict(
+            type='NonLinearNeck',
+            in_channels=256,
+            hid_channels=4096,
+            out_channels=256,
+            num_layers=2,
+            with_bias=True,
+            with_last_bn=False,
+            with_avg_pool=False),
+        loss=dict(type='CosineSimilarityLoss')),
 )
 
 # only keeps the latest 3 checkpoints
@@ -38,7 +49,6 @@ default_hooks = dict(checkpoint=dict(max_keep_ckpts=4))
 optim_wrapper = dict(
     type='OptimWrapper',
     optimizer=dict(type='SGD', lr=1e-3, weight_decay=1e-4, momentum=0.9))
-
 # learning rate scheduler
 param_scheduler = [
     dict(type='CosineAnnealingLR', T_max=200, by_epoch=True, begin=0, end=max_epochs)

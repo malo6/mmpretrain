@@ -4,9 +4,10 @@ _base_ = [
     '../_base_/default_runtime.py',
 ]
 max_epochs=400
+
 # model settings
 model = dict(
-    type='SimCLR',
+    type='BarlowTwins',
     backbone=dict(
         init_cfg=dict(
                 type='Pretrained',
@@ -17,17 +18,23 @@ model = dict(
         norm_cfg=dict(type='SyncBN'),
         zero_init_residual=True),
     neck=dict(
-        type='NonLinearNeck',  # SimCLR non-linear neck
+        type='NonLinearNeck',
         in_channels=2048,
-        hid_channels=2048,
-        out_channels=128,
-        num_layers=2,
-        with_avg_pool=True),
+        hid_channels=8192,
+        out_channels=8192,
+        num_layers=3,
+        with_last_bn=False,
+        with_last_bn_affine=False,
+        with_avg_pool=True,
+        init_cfg=dict(
+            type='Kaiming', distribution='uniform', layer=['Linear'])),
     head=dict(
-        type='ContrastiveHead',
-        loss=dict(type='CrossEntropyLoss'),
-        temperature=0.1),
-)
+        type='LatentCrossCorrelationHead',
+        in_channels=8192,
+        loss=dict(type='CrossCorrelationLoss')))
+
+
+
 
 # only keeps the latest 3 checkpoints
 default_hooks = dict(checkpoint=dict(max_keep_ckpts=4))
@@ -37,8 +44,9 @@ default_hooks = dict(checkpoint=dict(max_keep_ckpts=4))
 # optimizer wrapper
 optim_wrapper = dict(
     type='OptimWrapper',
-    optimizer=dict(type='SGD', lr=1e-3, weight_decay=1e-4, momentum=0.9))
-
+    # optimizer=dict(type='SGD', lr=1e-3, weight_decay=1e-4, momentum=0.9),
+    optimizer=dict(type='AdamW', lr=2e-5, betas=(0.9, 0.95), weight_decay=1e-6)
+    )
 # learning rate scheduler
 param_scheduler = [
     dict(type='CosineAnnealingLR', T_max=200, by_epoch=True, begin=0, end=max_epochs)

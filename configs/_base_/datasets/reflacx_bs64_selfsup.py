@@ -1,6 +1,7 @@
 # dataset settings
 dataset_type = 'Reflacx'
-data_root = '/media/zihao/7f04820d-0354-4f38-a4b4-cd1064923632/data/reflacx-1.0.0/'
+# data_root = '/media/zihao/7f04820d-0354-4f38-a4b4-cd1064923632/data/reflacx-1.0.0/'
+data_root = '/public_bme/data/reflacx-1.0.0/'
 batch_size=64
 data_preprocessor = dict(
     type='SelfSupDataPreprocessor',
