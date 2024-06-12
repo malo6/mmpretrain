@@ -1,7 +1,10 @@
 # model settings
 model = dict(
     type='MAE',
-    backbone=dict(type='MAEViT', arch='b', patch_size=16, mask_ratio=0.75),
+    backbone=dict(
+        init_cfg=dict(type='Pretrained',
+                      checkpoint='../preTrain/vit_b_16-c867db91.pth'),
+        type='MAEViT', arch='b', patch_size=16, mask_ratio=0.75),
     neck=dict(
         type='MAEPretrainDecoder',
         patch_size=16,
