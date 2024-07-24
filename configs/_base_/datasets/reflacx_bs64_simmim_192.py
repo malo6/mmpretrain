@@ -9,13 +9,14 @@ data_preprocessor = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(
-        type='RandomResizedCrop',
-        scale=224,
-        crop_ratio_range=(0.2, 1.0),
-        backend='pillow',
-        interpolation='bicubic'),
+    dict(type='RandomResizedCrop', scale=192, crop_ratio_range=(0.67, 1.0)),
     dict(type='RandomFlip', prob=0.5),
+    dict(
+        type='SimMIMMaskGenerator',
+        input_size=192,
+        mask_patch_size=32,
+        model_patch_size=4,
+        mask_ratio=0.6),
     dict(type='PackInputs')
 ]
 

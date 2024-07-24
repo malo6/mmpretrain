@@ -18,12 +18,12 @@ class Reflacx(BaseDataset):
     """  # noqa: E501
 
 
-    def __init__(self, data_root: str, ann_file: str="reflacx.json",**kwargs):
+    def __init__(self, data_root: str, ann_file: str="reflacx_att.json",**kwargs):
 
-        # /media/zihao/7f04820d-0354-4f38-a4b4-cd1064923632/data/reflacx-1.0.0
 
         self.backend = get_file_backend(data_root, enable_singleton=True)
         ann_file = self.backend.join_path(ann_file)
+
 
         super(Reflacx, self).__init__(
             ann_file=ann_file,
@@ -39,11 +39,13 @@ class Reflacx(BaseDataset):
             mimic_id=pair['study_id']
             image_path=pair['image_path']
             reflacx_id=pair['reflacx_id']
+            attention_path = pair['attention']
             report=pair['report']
-            img_path = self.backend.join_path(self.img_prefix, image_path)
+            img_path = self.backend.join_path(self.img_prefix, image_path)           
+            attention_path = self.backend.join_path(self.img_prefix, attention_path)
             #  info = dict(img_path=img_path)
             # {"img_path": "/public_bme/data/re......", "report": "this patient isnt good..."}
-            info = dict(img_path=img_path, report=report, reflacx_id=reflacx_id,mimic_id=mimic_id)
+            info = dict(img_path=img_path, attention_path= attention_path,report=report, reflacx_id=reflacx_id,mimic_id=mimic_id)
             data_list.append(info)
 
         return data_list

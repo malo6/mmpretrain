@@ -1,8 +1,8 @@
 _base_ = '../_base_/default_runtime.py'
 
 # dataset settings
-dataset_type = 'ImageNet'
-data_root = 'data/imagenet/'
+dataset_type = 'Reflacx'
+data_root = '/public_bme/data/reflacx-1.0.0/'
 data_preprocessor = dict(
     type='TwoNormDataPreprocessor',
     mean=[123.675, 116.28, 103.53],
@@ -36,20 +36,21 @@ train_pipeline = [
     dict(type='PackInputs')
 ]
 train_dataloader = dict(
-    batch_size=256,
-    num_workers=8,
+    batch_size=64,
+    num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     collate_fn=dict(type='default_collate'),
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='meta/train.txt',
-        data_prefix=dict(img_path='train/'),
-        pipeline=train_pipeline)) 
+        # ann_file='meta/train.txt',
+        # data_prefix=dict(img_path='train/'),
+        pipeline=train_pipeline))
 
 # model settings
 model = dict(
+
     type='BEiT',
     backbone=dict(
         type='BEiTPretrainViT',
@@ -63,6 +64,8 @@ model = dict(
             dict(type='TruncNormal', std=0.02, layer='Linear'),
             dict(type='TruncNormal', std=0.02, layer='Conv2d'),
             dict(type='Constant', layer='LayerNorm', val=1.0, bias=0.0)
+            # dict(type='Pretrained',
+            #           checkpoint='../preTrain/dalle_encoder.pth')
         ]),
     neck=None,
     head=dict(
@@ -75,7 +78,7 @@ model = dict(
         init_cfg=dict(
             type='Pretrained',
             checkpoint=  # noqa: E251
-            'https://download.openmmlab.com/mmselfsup/1.x/target_generator_ckpt/dalle_encoder.pth',  # noqa: E501
+            '../preTrain/dalle_encoder.pth',  # noqa: E501
         )))
 
 # optimizer wrapper
@@ -116,15 +119,13 @@ param_scheduler = [
 ]
 
 # runtime settings
-train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=300)
+train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=400)
 default_hooks = dict(
     # only keeps the latest 3 checkpoints
-    checkpoint=dict(type='CheckpointHook', interval=1, max_keep_ckpts=3))
-
+    checkpoint=dict(type='CheckpointHook', interval=100, max_keep_ckpts=400),
+    logger = dict(type='LoggerHook',interval = 10),
+    )
+    
 randomness = dict(seed=0, diff_rank_seed=True)
 
 find_unused_parameters = True
-
-# NOTE: `auto_scale_lr` is for automatically scaling LR
-# based on the actual training batch size.
-auto_scale_lr = dict(base_batch_size=2048)
