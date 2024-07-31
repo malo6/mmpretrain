@@ -4,12 +4,9 @@ model = dict(
     backbone=dict(
         init_cfg=dict(type='Pretrained',
                       checkpoint='../preTrain/vit_base_p16_224_timm.pth'),
-                    #   checkpoint='../preTrain/vit_b_16-c867db91.pth'),
-        # type='MAEViT', arch='b', patch_size=16, mask_ratio=0.75), # 0.9 0.85
-        type='GazeMAEViT', arch='b', patch_size=16, mask_ratio=0.80,clinical_ratio=0.5), # 0.9 0.85
-        # type='MAEViT', arch='b', patch_size=16, mask_ratio=0.80), # 0.9 0.85
-        neck=dict(
-        type='',
+        type='MAEViT', arch='b', patch_size=16, mask_ratio=0.75), # 0.9 0.85
+         neck=dict(
+        type='MAEPretrainDecoder',
         patch_size=16,
         in_chans=3,
         embed_dim=768,

@@ -14,4 +14,8 @@ sbatch tools/bme_train.sh configs/beit/beit_beit-base-p16_4xb64-amp-coslr-300e_r
 
 sbatch tools/bme_train.sh configs/cae/cae_beit-base-p16_4xb64-amp-coslr-300e_reflacx.py --work-dir workspace-cae01
 
-sbatch tools/bme_train.sh configs/simmim/simmim_swin-base-w6_4xb64-amp-coslr-400e_reflacx-192px.py
+sbatch tools/bme_train.sh configs/simmim/simmim_swin-base-w6_4xb64-amp-coslr-400e_reflacx-192px.py --work-dir workspace-simmim00
+
+
+#beit版本使用的相对位置编码不匹配
+sbatch tools/bme_train.sh configs/beitv2/beitv2_beit-base-p16_4xb64-amp-coslr-400e_reflacx.py --work-dir workspace-beitv2
