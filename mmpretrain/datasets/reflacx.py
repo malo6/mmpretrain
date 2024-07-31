@@ -41,6 +41,8 @@ class Reflacx(BaseDataset):
             reflacx_id=pair['reflacx_id']
             report=pair['report']
             img_path = self.backend.join_path(self.img_prefix, image_path)
+            #  info = dict(img_path=img_path)
+            # {"img_path": "/public_bme/data/re......", "report": "this patient isnt good..."}
             info = dict(img_path=img_path, report=report, reflacx_id=reflacx_id,mimic_id=mimic_id)
             data_list.append(info)
 
