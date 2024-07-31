@@ -1,8 +1,8 @@
 _base_ = '../_base_/default_runtime.py'
 
 # dataset settings
-dataset_type = 'ImageNet'
-data_root = 'data/imagenet/'
+dataset_type = 'Reflacx'
+data_root = '/public_bme/data/reflacx-1.0.0/'
 data_preprocessor = dict(
     type='TwoNormDataPreprocessor',
     mean=[123.675, 116.28, 103.53],
@@ -13,13 +13,7 @@ data_preprocessor = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(
-        type='ColorJitter',
-        brightness=0.4,
-        contrast=0.4,
-        saturation=0.4,
-        hue=0.),
-    dict(type='RandomFlip', prob=0.5, direction='horizontal'),
+    dict(type='RandomFlip', prob=0.5),
     dict(
         type='RandomResizedCropAndInterpolationWithTwoPic',
         size=224,
@@ -35,48 +29,45 @@ train_pipeline = [
         min_num_patches=16),
     dict(type='PackInputs')
 ]
+
 train_dataloader = dict(
-    batch_size=256,
-    num_workers=8,
+    batch_size=64,
+    num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     collate_fn=dict(type='default_collate'),
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='meta/train.txt',
-        data_prefix=dict(img_path='train/'),
-        pipeline=train_pipeline)) 
+        pipeline=train_pipeline))
 
 # model settings
 model = dict(
-    type='BEiT',
+    type='CAE',
     backbone=dict(
-        type='BEiTPretrainViT',
-        arch='base',
+        type='CAEPretrainViT',
+        arch='b',
         patch_size=16,
-        drop_path_rate=0.1,
-        final_norm=True,
-        out_type='raw',
         layer_scale_init_value=0.1,
-        init_cfg=[
-            dict(type='TruncNormal', std=0.02, layer='Linear'),
-            dict(type='TruncNormal', std=0.02, layer='Conv2d'),
-            dict(type='Constant', layer='LayerNorm', val=1.0, bias=0.0)
-        ]),
-    neck=None,
-    head=dict(
-        type='BEiTV1Head',
+        bias='qv_bias'),
+    neck=dict(
+        type='CAENeck',
         embed_dims=768,
-        num_embed=8192,
-        loss=dict(type='CrossEntropyLoss')),
+        num_heads=12,
+        regressor_depth=4,
+        decoder_depth=4,
+        mlp_ratio=4,
+        layer_scale_init_value=0.1,
+    ),
+    head=dict(type='CAEHead', loss=dict(type='CAELoss', lambd=2)),
     target_generator=dict(
         type='DALL-E',
         init_cfg=dict(
             type='Pretrained',
             checkpoint=  # noqa: E251
-            'https://download.openmmlab.com/mmselfsup/1.x/target_generator_ckpt/dalle_encoder.pth',  # noqa: E501
-        )))
+            '../preTrain/dalle_encoder.pth',  # noqa: E501
+        )),
+    base_momentum=0.0)
 
 # optimizer wrapper
 optim_wrapper = dict(
@@ -86,16 +77,7 @@ optim_wrapper = dict(
         type='AdamW', lr=1.5e-3, betas=(0.9, 0.999), weight_decay=0.05),
     clip_grad=dict(max_norm=3.0),
     paramwise_cfg=dict(
-        custom_keys={
-            # the following configurations are designed for BEiT
-            '.ln': dict(decay_mult=0.0),
-            '.bias': dict(decay_mult=0.0),
-            'q_bias': dict(decay_mult=0.0),
-            'v_bias': dict(decay_mult=0.0),
-            '.cls_token': dict(decay_mult=0.0),
-            '.pos_embed': dict(decay_mult=0.0),
-            '.gamma': dict(decay_mult=0.0),
-        }))
+        bias_decay_mult=0.0, norm_decay_mult=0.0, flat_decay_mult=0.0))
 
 # learning rate scheduler
 param_scheduler = [
@@ -108,6 +90,7 @@ param_scheduler = [
         convert_to_iter_based=True),
     dict(
         type='CosineAnnealingLR',
+        T_max=290,
         eta_min=1e-5,
         by_epoch=True,
         begin=10,
@@ -116,15 +99,13 @@ param_scheduler = [
 ]
 
 # runtime settings
-train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=300)
+train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=400)
 default_hooks = dict(
     # only keeps the latest 3 checkpoints
-    checkpoint=dict(type='CheckpointHook', interval=1, max_keep_ckpts=3))
+    checkpoint=dict(type='CheckpointHook', interval=100, max_keep_ckpts=400))
 
 randomness = dict(seed=0, diff_rank_seed=True)
 
 find_unused_parameters = True
 
-# NOTE: `auto_scale_lr` is for automatically scaling LR
-# based on the actual training batch size.
-auto_scale_lr = dict(base_batch_size=2048)
+
