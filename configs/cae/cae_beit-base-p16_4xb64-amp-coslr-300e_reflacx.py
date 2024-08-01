@@ -46,9 +46,12 @@ model = dict(
     type='CAE',
     backbone=dict(
         type='CAEPretrainViT',
+        init_cfg=dict(type='Pretrained',
+                      checkpoint='../preTrain/vit_base_p16_224_timmlab.pth'),
         arch='b',
         patch_size=16,
         layer_scale_init_value=0.1,
+        use_abs_pos_em= True,
         bias='qv_bias'),
     neck=dict(
         type='CAENeck',

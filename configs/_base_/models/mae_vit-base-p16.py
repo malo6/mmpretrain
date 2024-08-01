@@ -3,7 +3,7 @@ model = dict(
     type='MAE',
     backbone=dict(
         init_cfg=dict(type='Pretrained',
-                      checkpoint='../preTrain/vit_base_p16_224_timm.pth'),
+                      checkpoint='../preTrain/vit_base_p16_224_timmlab.pth'),
         type='MAEViT', arch='b', patch_size=16, mask_ratio=0.75), # 0.9 0.85
          neck=dict(
         type='MAEPretrainDecoder',

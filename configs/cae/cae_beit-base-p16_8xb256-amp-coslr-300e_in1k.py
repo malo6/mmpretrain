@@ -51,6 +51,7 @@ model = dict(
         arch='b',
         patch_size=16,
         layer_scale_init_value=0.1,
+        use_abs_pos_em= True,
         bias='qv_bias'),
     neck=dict(
         type='CAENeck',
@@ -67,7 +68,7 @@ model = dict(
         init_cfg=dict(
             type='Pretrained',
             checkpoint=  # noqa: E251
-            'https://download.openmmlab.com/mmselfsup/1.x/target_generator_ckpt/dalle_encoder.pth',  # noqa: E501
+            '../preTrain/dalle_encoder.pth',  # noqa: E501
         )),
     base_momentum=0.0)
 
