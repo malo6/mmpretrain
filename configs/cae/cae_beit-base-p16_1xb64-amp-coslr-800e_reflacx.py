@@ -2,7 +2,8 @@ _base_ = '../_base_/default_runtime.py'
 
 # dataset settings
 dataset_type = 'Reflacx'
-data_root = '/public_bme/data/reflacx-1.0.0/'
+# data_root = '/public_bme/data/reflacx-1.0.0/'
+data_root = '../data/reflacx-1.0.0/'
 data_preprocessor = dict(
     type='TwoNormDataPreprocessor',
     mean=[123.675, 116.28, 103.53],
@@ -50,9 +51,10 @@ model = dict(
                       checkpoint='../preTrain/vit_base_p16_224_timmlab.pth'),
         arch='b',
         patch_size=16,
-        layer_scale_init_value=0.1,
-        use_abs_pos_em= True,
-        bias='qv_bias'),
+        layer_scale_init_value=0.0,
+        bias=True
+        # bias='qv_bias'
+        ),
     neck=dict(
         type='CAENeck',
         embed_dims=768,
@@ -97,15 +99,15 @@ param_scheduler = [
         eta_min=1e-5,
         by_epoch=True,
         begin=10,
-        end=300,
+        end=400,
         convert_to_iter_based=True)
 ]
 
 # runtime settings
-train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=400)
+train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=800)
 default_hooks = dict(
     # only keeps the latest 3 checkpoints
-    checkpoint=dict(type='CheckpointHook', interval=100, max_keep_ckpts=400))
+    checkpoint=dict(type='CheckpointHook', interval=100, max_keep_ckpts=8))
 
 randomness = dict(seed=0, diff_rank_seed=True)
 

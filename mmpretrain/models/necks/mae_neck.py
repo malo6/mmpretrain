@@ -129,6 +129,8 @@ class MAEPretrainDecoder(BaseModule):
         x = self.decoder_embed(x)
 
         # append mask tokens to sequence
+        # because of the existence of cls_token in x, 
+        # the second dimension =ids_restore.shape[1]-(x.shape[1]-1)=ids_restore.shape[1] + 1 - x.shape[1]
         mask_tokens = self.mask_token.repeat(
             x.shape[0], ids_restore.shape[1] + 1 - x.shape[1], 1)
         x_ = torch.cat([x[:, 1:, :], mask_tokens], dim=1)
