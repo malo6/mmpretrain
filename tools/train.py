@@ -13,7 +13,7 @@ from mmengine.utils.dl_utils import TORCH_VERSION
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a model')
-    parser.add_argument('config', help='train config file path')
+    parser.add_argument('--config', default="configs/mae/gazemae_vit-base-p16_1xb64-amp-coslr-800e_reflacx.py",help='train config file path')
     parser.add_argument('--work-dir', help='the dir to save logs and models')
     parser.add_argument(
         '--resume',

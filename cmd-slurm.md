@@ -1,14 +1,14 @@
-sbatch tools/bme_train.sh  configs/simclr/simclr_resnet50_1xb64-coslr-400e_reflacx.py 
+sbatch tools/bme_train.sh configs/simclr/simclr_resnet50_1xb64-coslr-400e_reflacx.py
 
-sbatch tools/bme_train.sh  configs/byol/byol_resnet50_1xb64-coslr-400e_reflacx.py 
+sbatch tools/bme_train.sh configs/byol/byol_resnet50_1xb64-coslr-400e_reflacx.py
 
-sbatch tools/bme_train.sh  configs/barlowtwins/barlowtwins_resnet50_1xb64-coslr-400e_reflacx.py --resume work_dirs/barlowtwins_resnet50_1xb64-coslr-400e_reflacx/epoch_100.pth
+sbatch tools/bme_train.sh configs/barlowtwins/barlowtwins_resnet50_1xb64-coslr-400e_reflacx.py --resume work_dirs/barlowtwins_resnet50_1xb64-coslr-400e_reflacx/epoch_100.pth
 
-sbatch tools/bme_train.sh  configs/mae/mae_vit-base-p16_1xb64-amp-coslr-400e_reflacx.py 
+sbatch tools/bme_train.sh configs/mae/mae_vit-base-p16_1xb64-amp-coslr-400e_reflacx.py
 
-sbatch tools/bme_train.sh  configs/mae/mae_vit-base-p16_1xb64-amp-coslr-800e_mimic-eye.py 
+sbatch tools/bme_train.sh configs/mae/mae_vit-base-p16_1xb64-amp-coslr-800e_mimic-eye.py
 
-sbatch tools/bme_train.sh  configs/mae/mae-ratio85_vit-base-p16_1xb64-amp-coslr-800e_mimic-eye.py
+sbatch tools/bme_train.sh configs/mae/mae-ratio85_vit-base-p16_1xb64-amp-coslr-800e_mimic-eye.py
 
 sbatch tools/bme_train.sh configs/mae/mae_vit-base-p16_1xb64-amp-coslr-400e_reflacx.py --work-dir workspace-timm-mask0.8
 
@@ -20,6 +20,7 @@ sbatch tools/bme_train.sh configs/cae/cae_beit-base-p16_4xb64-amp-coslr-300e_ref
 
 sbatch tools/bme_train.sh configs/simmim/simmim_swin-base-w6_4xb64-amp-coslr-400e_reflacx-192px.py --work-dir workspace-simmim00
 
-
-#beit版本使用的相对位置编码不匹配
+#beit 版本使用的相对位置编码不匹配
 sbatch tools/bme_train.sh configs/beitv2/beitv2_beit-base-p16_4xb64-amp-coslr-400e_reflacx.py --work-dir workspace-beitv2
+
+sbatch tools/bme_train.sh configs/mae/gazemae_vit-base-p16_1xb64-amp-coslr-800e_reflacx.py
