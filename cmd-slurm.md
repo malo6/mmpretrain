@@ -6,6 +6,10 @@ sbatch tools/bme_train.sh  configs/barlowtwins/barlowtwins_resnet50_1xb64-coslr-
 
 sbatch tools/bme_train.sh  configs/mae/mae_vit-base-p16_1xb64-amp-coslr-400e_reflacx.py 
 
+sbatch tools/bme_train.sh  configs/mae/mae_vit-base-p16_1xb64-amp-coslr-800e_mimic-eye.py 
+
+sbatch tools/bme_train.sh  configs/mae/mae-ratio85_vit-base-p16_1xb64-amp-coslr-800e_mimic-eye.py
+
 sbatch tools/bme_train.sh configs/mae/mae_vit-base-p16_1xb64-amp-coslr-400e_reflacx.py --work-dir workspace-timm-mask0.8
 
 sbatch tools/bme_train.sh configs/mae/mae_vit-base-p16_1xb64-amp-coslr-400e_reflacx.py --work-dir workspace-mask0.8/0.5

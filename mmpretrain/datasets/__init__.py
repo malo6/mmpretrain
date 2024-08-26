@@ -13,6 +13,7 @@ from .flowers102 import Flowers102
 from .food101 import Food101
 from .imagenet import ImageNet, ImageNet21k
 from .reflacx import Reflacx
+from .mimic_eye import MIMIC_EYE
 from .inshop import InShop
 from .mnist import MNIST, FashionMNIST
 from .multi_label import MultiLabelDataset
@@ -27,7 +28,7 @@ from .transforms import *  # noqa: F401,F403
 from .voc import VOC
 
 __all__ = [
-    'BaseDataset', 'Reflacx','CIFAR10', 'CIFAR100', 'CUB', 'Caltech101', 'CustomDataset',
+    'BaseDataset', 'Reflacx','MIMIC_EYE','CIFAR10', 'CIFAR100', 'CUB', 'Caltech101', 'CustomDataset',
     'DTD', 'FGVCAircraft', 'FashionMNIST', 'Flowers102', 'Food101', 'ImageNet',
     'ImageNet21k', 'InShop', 'KFoldDataset', 'MNIST', 'MultiLabelDataset',
     'MultiTaskDataset', 'NLVR2', 'OxfordIIITPet', 'Places205', 'SUN397',
