@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH -p bme_gpu4
+#SBATCH -p bme_gpu
 #SBATCH --job-name=selfsup_reflacx
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:1
