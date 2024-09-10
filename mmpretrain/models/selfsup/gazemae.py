@@ -432,11 +432,15 @@ class GazeMAEViT(VisionTransformer):
 
         # len_keep_clinical = (len_clinical * (1 - clinical_ratio)).type(torch.int8)
         # len_keep_non=(L*(1-mask_ratio)-len_keep_clinical).type(torch.int8)
+        # Potential bug: if the area of clinical_significant regions is too large, len_mask_non may exceed the length of non_clinical regions
         len_mask_clinical = (len_clinical *  clinical_ratio).type(torch.uint8)
-        len_mask_non=(L*mask_ratio-len_mask_clinical).type(torch.uint8)
+        len_mask_non=(int(L*mask_ratio)-len_mask_clinical).type(torch.uint8)
 
-        clinical_mask, ids_keep_clinical=self.noise2mask(clinical_noise,len_mask_clinical)
-        non_clinical_mask, ids_keep_non=self.noise2mask(non_clinical_noise,len_mask_non)
+        post_len_mask_non=torch.where(len_mask_non>len_non,len_non,len_mask_non)
+        post_len_mask_clinical=(int(L*mask_ratio)-post_len_mask_non).type(torch.uint8)
+
+        clinical_mask, ids_keep_clinical=self.noise2mask(clinical_noise,post_len_mask_clinical)
+        non_clinical_mask, ids_keep_non=self.noise2mask(non_clinical_noise,post_len_mask_non)
 
         # # 使用 torch.nonzero 获取非零元素的索引
         # ids_restore=np.zeros_like(ids_keep_clinical)
@@ -453,7 +457,7 @@ class GazeMAEViT(VisionTransformer):
         # 进行并集操作
         union_mask = clinical_mask | non_clinical_mask
 
-        zero_positions = (union_mask == 0).nonzero(as_tuple=False)  # 结果形状是 [N, 3]
+        zero_positions = (union_mask == 0).nonzero(as_tuple=False)  # 结果形状是 [N, 2]
         one_positions = (union_mask == 1).nonzero(as_tuple=False) 
         ids_visible=zero_positions[:,1].view(N, -1)
         ids_invisible=one_positions[:,1].view(N, -1)
